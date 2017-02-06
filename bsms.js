@@ -1,32 +1,42 @@
-var allCourses = [];
+var allNodes = [];
 var allLinks = [];
 var courseTypes = ['breadth_courses', 'depth_courses'];
 var allConcentrations = [
-    bsms_communications_control_and_signal_processing,
-    bsms_computer_networks_and_security,
-    bsms_computer_systems_and_software,
-    bsms_computer_vision_and_machine_learning,
-    bsms_electromagnetics_plasma_and_optics,
-    bsms_microsystems_materials_and_devices,
-    bsms_power_systems];
+    {"data": bsms_communications_control_and_signal_processing, "name": "bsms_communications_control_and_signal_processing"},
+    {"data": bsms_computer_networks_and_security, "name": "bsms_computer_networks_and_security"},
+    {"data": bsms_computer_systems_and_software, "name": "bsms_computer_systems_and_software"},
+    {"data": bsms_computer_vision_and_machine_learning, "name": "bsms_computer_vision_and_machine_learning"},
+    {"data": bsms_electromagnetics_plasma_and_optics, "name": "bsms_electromagnetics_plasma_and_optics"},
+    {"data": bsms_microsystems_materials_and_devices, "name": "bsms_microsystems_materials_and_devices"},
+    {"data": bsms_power_systems, "name": "bsms_power_systems"}
+];
 
-function createAllCoursesArray () {
+// create the nodes array
+function createAllNodesArray () {
     for (j = 0; j < allConcentrations.length; j=j+1) {
         for (i = 0; i < courseTypes.length; i=i+1) {
-            for (h = 0; h < allConcentrations[j][courseTypes[i]].length; h=h+1) {
-                if (allCourses.indexOf(allConcentrations[j][courseTypes[i]][h]) === -1) {
-                    allCourses.push(allConcentrations[j][courseTypes[i]][h]);
+            for (h = 0; h < allConcentrations[j]["data"][courseTypes[i]].length; h=h+1) {
+                if (allNodes.indexOf(allConcentrations[j]["data"][courseTypes[i]][h]) === -1) {
+                    allNodes.push(allConcentrations[j]["data"][courseTypes[i]][h]);
                 }
             }
         }
     }
+    for (j = 0; j < allConcentrations.length; j=j+1) {
+        var tempVar = allConcentrations[j]["name"];
+        allNodes.push({"code": tempVar, "name": tempVar});
+    }
 }
 
+// create the links array
 function createAllLinksArray () {
+    for (i = 0; i < allConcentrations.length; i=i+1) {
+    }
 }
 
 function displayConcentrations () {
-    createAllCoursesArray();
+    createAllNodesArray();
+    createAllLinksArray;
     
     var width = window.innerWidth,
         height = window.innerHeight;
@@ -35,14 +45,15 @@ function displayConcentrations () {
         .attr("width", width)
         .attr("height", height);
 
-    var courseNodes = svg.append("g")
-        .attr("class", "nodes")
+    // create all the nodes
+    var graphNodes = svg.append("g")
+        .attr("class", "courses")
         .selectAll("circle")
-        .data(allCourses)
+        .data(allNodes)
         .enter().append("circle")
         // .attr("id", function(d) { return d.code; } )
-        .style("fill", "orange")
-        .attr("r", "5") //courseNode size
+        .style("fill", nodeColor)
+        .attr("r", nodeSize) //courseNode size
         // functions to call when dragged
         .call(d3.drag()
           .on("start", dragstarted)
@@ -67,6 +78,26 @@ function displayConcentrations () {
         .on("click", function (d) {
             console.log(d);
         });
+
+    // function to determine node size
+    function nodeColor(d) {
+        if (d.name.slice(0, 4) != "bsms") {
+            return "orange";
+        } else {
+            return "grey";
+        }
+    }
+
+    // function to determine node size
+    function nodeSize(d) {
+        if (d.name.slice(0, 4) != "bsms") {
+            return 5;
+        } else {
+            return 15;
+        }
+    }
+
+
     // what to do when dragged
     function dragstarted(d) {
         if (!d3.event.active) forceSim.alphaTarget(0.3).restart();
@@ -83,21 +114,15 @@ function displayConcentrations () {
         d.fy = null;
     }
 
-    var forceSim = d3.forceSimulation(allCourses)
+    var forceSim = d3.forceSimulation(allNodes)
         .force("center", d3.forceCenter(width / 2, height / 2))
-        .force("collide", d3.forceCollide(collideRadius).strength(1));
+        .force("collide", d3.forceCollide(nodeSize).strength(1));
         // .force("charge", d3.forceManyBody());
-    function collideRadius (d) {
-        return 5;//courseNode size
-    }
 
     forceSim.on("tick", 
         function tick (e) {
-            courseNodes
-                .attr("transform", function(d) { return "translate(" + d.x + ", " + d.y + ")"; })
-                // .attr("transform", "translate(50, 50)");
-                // .attr("transform", function(d) { console.log(d); return "translate(50, 50)"; })
-                ;
+            graphNodes
+                .attr("transform", function(d) { return "translate(" + d.x + ", " + d.y + ")"; });
         }
     );
 }
