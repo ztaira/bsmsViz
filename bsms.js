@@ -1,6 +1,9 @@
 var allNodes = [];
+var allNodeCodes = [];
 var allLinks = [];
-var courseTypes = ['breadth_courses', 'depth_courses'];
+var courseTypes = [];
+// courseTypes.push('breadth_courses');
+courseTypes.push('depth_courses');
 var allConcentrations = [
     {"data": bsms_communications_control_and_signal_processing, "name": "bsms_communications_control_and_signal_processing"},
     {"data": bsms_computer_networks_and_security, "name": "bsms_computer_networks_and_security"},
@@ -13,30 +16,44 @@ var allConcentrations = [
 
 // create the nodes array
 function createAllNodesArray () {
+    var tempVar;
     for (j = 0; j < allConcentrations.length; j=j+1) {
         for (i = 0; i < courseTypes.length; i=i+1) {
             for (h = 0; h < allConcentrations[j]["data"][courseTypes[i]].length; h=h+1) {
-                if (allNodes.indexOf(allConcentrations[j]["data"][courseTypes[i]][h]) === -1) {
-                    allNodes.push(allConcentrations[j]["data"][courseTypes[i]][h]);
+                if (allNodeCodes.indexOf(allConcentrations[j]["data"][courseTypes[i]][h]["code"]) === -1) {
+                    tempVar = allConcentrations[j]["data"][courseTypes[i]][h];
+                    tempVar["id"] = tempVar["code"];
+                    allNodes.push(tempVar);
+                    allNodeCodes.push(tempVar["id"]);
                 }
             }
         }
     }
     for (j = 0; j < allConcentrations.length; j=j+1) {
         var tempVar = allConcentrations[j]["name"];
-        allNodes.push({"code": tempVar, "name": tempVar});
+        allNodes.push({"code": tempVar, "name": tempVar, "id": tempVar});
     }
+    console.log({"nodes": allNodes});
 }
 
 // create the links array
 function createAllLinksArray () {
+    var sourceName, targetName;
     for (i = 0; i < allConcentrations.length; i=i+1) {
+        for (j = 0; j < courseTypes.length; j=j+1) {
+            for (k = 0; k < allConcentrations[i]["data"][courseTypes[j]].length; k=k+1) {
+                sourceName = allConcentrations[i]["name"];
+                targetName = allConcentrations[i]["data"][courseTypes[j]][k]["code"];
+                allLinks.push({"source": sourceName, "target": targetName});
+            }
+        }
     }
+    console.log({"links": allLinks});
 }
 
 function displayConcentrations () {
     createAllNodesArray();
-    createAllLinksArray;
+    createAllLinksArray();
     
     var width = window.innerWidth,
         height = window.innerHeight;
@@ -44,6 +61,15 @@ function displayConcentrations () {
     var svg = d3.select("body").append("svg")
         .attr("width", width)
         .attr("height", height);
+
+    // create all the links
+    var graphLinks = svg.append("g")
+        .attr("class", "links")
+        .selectAll("line")
+        .data(allLinks)
+        .enter().append("line")
+        .style("stroke", "grey")
+        .style("stroke-width", "1.5px");
 
     // create all the nodes
     var graphNodes = svg.append("g")
@@ -97,7 +123,6 @@ function displayConcentrations () {
         }
     }
 
-
     // what to do when dragged
     function dragstarted(d) {
         if (!d3.event.active) forceSim.alphaTarget(0.3).restart();
@@ -116,11 +141,20 @@ function displayConcentrations () {
 
     var forceSim = d3.forceSimulation(allNodes)
         .force("center", d3.forceCenter(width / 2, height / 2))
-        .force("collide", d3.forceCollide(nodeSize).strength(1));
-        // .force("charge", d3.forceManyBody());
+        .force("collide", d3.forceCollide(5).strength(1))
+        .force("charge", d3.forceManyBody().strength(-30))
+        .force("link", d3.forceLink().id(function(d) { return d.id; }).distance(50))
+        .alphaDecay(0.02);
+
+    forceSim.force("link").links(allLinks);
 
     forceSim.on("tick", 
         function tick (e) {
+            graphLinks
+                .attr("x1", function(d) { return d.source.x; })
+                .attr("y1", function(d) { return d.source.y; })
+                .attr("x2", function(d) { return d.target.x; })
+                .attr("y2", function(d) { return d.target.y; });
             graphNodes
                 .attr("transform", function(d) { return "translate(" + d.x + ", " + d.y + ")"; });
         }
