@@ -1,37 +1,35 @@
-## Welcome to GitHub Pages
+# bsmsViz
+Hack-A-Week 16: Visualizing the BS/MS offerings in the Northeastern's
+Department of Electrical and Computer Engineering
 
-You can use the [editor on GitHub](https://github.com/ztaira14/bsmsViz/edit/master/README.md) to maintain and preview the content for your website in Markdown files.
+### Usage:
+- Visit https://ztaira14.github.io/bsmsViz/ for hosted version
+- Open index.html in the browser of your choice for local version
 
-Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
+### Features:
+- Easily visualize the depth courses in the various BS/MS offerings in the
+ECE department at Northeastern 
+- Mouseover for class codes and class titles
 
-### Markdown
+### What it does:
+- Uses data from the js files in the data directory to construct a graph
+of the depth courses
+- Visualises this data using the d3 visualization library
 
-Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
+### What it doesn't do:
+- Check that course namings are consistent (As of Feb. 7th, 2017, the class
+EECE 5698 has three different titles in three different concentrations)
 
-```markdown
-Syntax highlighted code block
-
-# Header 1
-## Header 2
-### Header 3
-
-- Bulleted
-- List
-
-1. Numbered
-2. List
-
-**Bold** and _Italic_ and `Code` text
-
-[Link](url) and ![Image](src)
+### Included Files:
+```
+- README.md..................This readme file
+- index.html.................HTML/CSS file
+- bsms.js....................JS file linked to by index.html
+- d3.min.js..................d3, a cool visualization library
+- data/......................Data used to generate the graph. Originally
+obtained by pulling down the HTML using Python and formatting it into json
+with vim.
 ```
 
-For more details see [GitHub Flavored Markdown](https://guides.github.com/features/mastering-markdown/).
-
-### Jekyll Themes
-
-Your Pages site will use the layout and styles from the Jekyll theme you have selected in your [repository settings](https://github.com/ztaira14/bsmsViz/settings). The name of this theme is saved in the Jekyll `_config.yml` configuration file.
-
-### Support or Contact
-
-Having trouble with Pages? Check out our [documentation](https://help.github.com/categories/github-pages-basics/) or [contact support](https://github.com/contact) and we’ll help you sort it out.
+### Example Output:
+- See https://ztaira14.github.io/bsmsViz/
