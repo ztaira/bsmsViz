@@ -52,12 +52,23 @@ function createAllLinksArray () {
 }
 
 function displayConcentrations () {
+    // Create the nodes and links arrays
     createAllNodesArray();
     createAllLinksArray();
     
     var width = window.innerWidth,
         height = window.innerHeight;
 
+    // create the tooltip
+    var div = d3.select("body").append("div")
+        .attr("class", "tooltip")
+        .style("opacity", 0)
+        .style("-webkit-user-select", "none")
+        .style("-moz-user-select", "none")
+        .style("-ms-user-select", "none")
+        .html("Hello World");
+
+    // create the svg
     var svg = d3.select("body").append("svg")
         .attr("width", width)
         .attr("height", height);
@@ -86,20 +97,20 @@ function displayConcentrations () {
           .on("drag", dragged)
           .on("end", dragended))
         // show the tooltip on mouseover
-        // .on("mouseenter", function (d) {
-          // div.transition()
-            // .duration(200)
-            // .style("opacity", .8);
-          // div.html("Name: " + d.name + "<br>Size: " + d.size + "<br>Language: " + languageIndex[d.language])
-            // .style("left", (d3.event.pageX) + "px")
-            // .style("top", (d3.event.pageY - 28) + "px");
-        // })
+        .on("mouseenter", function (d) {
+          div.transition()
+            .duration(200)
+            .style("opacity", .8);
+          div.html(d.code + "<br>" + d.name)
+            .style("left", (d3.event.pageX) + "px")
+            .style("top", (d3.event.pageY - 28) + "px");
+        })
         // hide the tooltip on mouseleave
-        // .on("mouseleave", function (d) {
-          // div.transition()
-            // .duration(500)
-            // .style("opacity", 0);
-        // })
+        .on("mouseleave", function (d) {
+          div.transition()
+            .duration(500)
+            .style("opacity", 0);
+        })
         // when clicked, open the repository the node represents
         .on("click", function (d) {
             console.log(d);
@@ -139,6 +150,7 @@ function displayConcentrations () {
         d.fy = null;
     }
 
+    // create the force simulation
     var forceSim = d3.forceSimulation(allNodes)
         .force("center", d3.forceCenter(width / 2, height / 2))
         .force("collide", d3.forceCollide(5).strength(1))
@@ -146,8 +158,10 @@ function displayConcentrations () {
         .force("link", d3.forceLink().id(function(d) { return d.id; }).distance(50))
         .alphaDecay(0.02);
 
+    // link stuff
     forceSim.force("link").links(allLinks);
 
+    // tick function
     forceSim.on("tick", 
         function tick (e) {
             graphLinks
