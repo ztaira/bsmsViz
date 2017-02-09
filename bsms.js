@@ -19,18 +19,18 @@ function createAllNodesArray () {
     var tempVar;
     for (j = 0; j < allConcentrations.length; j=j+1) {
         for (i = 0; i < courseTypes.length; i=i+1) {
-            for (h = 0; h < allConcentrations[j]["data"][courseTypes[i]].length; h=h+1) {
-                if (allNodeCodes.indexOf(allConcentrations[j]["data"][courseTypes[i]][h]["code"]) === -1) {
-                    tempVar = allConcentrations[j]["data"][courseTypes[i]][h];
-                    tempVar["id"] = tempVar["code"];
+            for (h = 0; h < allConcentrations[j].data[courseTypes[i]].length; h=h+1) {
+                if (allNodeCodes.indexOf(allConcentrations[j].data[courseTypes[i]][h].code) === -1) {
+                    tempVar = allConcentrations[j].data[courseTypes[i]][h];
+                    tempVar.id = tempVar.code;
                     allNodes.push(tempVar);
-                    allNodeCodes.push(tempVar["id"]);
+                    allNodeCodes.push(tempVar.id);
                 }
             }
         }
     }
     for (j = 0; j < allConcentrations.length; j=j+1) {
-        var tempVar = allConcentrations[j]["name"];
+        tempVar = allConcentrations[j].name;
         allNodes.push({"code": tempVar, "name": tempVar, "id": tempVar});
     }
     console.log({"nodes": allNodes});
@@ -41,9 +41,9 @@ function createAllLinksArray () {
     var sourceName, targetName;
     for (i = 0; i < allConcentrations.length; i=i+1) {
         for (j = 0; j < courseTypes.length; j=j+1) {
-            for (k = 0; k < allConcentrations[i]["data"][courseTypes[j]].length; k=k+1) {
-                sourceName = allConcentrations[i]["name"];
-                targetName = allConcentrations[i]["data"][courseTypes[j]][k]["code"];
+            for (k = 0; k < allConcentrations[i].data[courseTypes[j]].length; k=k+1) {
+                sourceName = allConcentrations[i].name;
+                targetName = allConcentrations[i].data[courseTypes[j]][k].code;
                 allLinks.push({"source": sourceName, "target": targetName});
             }
         }
@@ -79,56 +79,74 @@ function displayConcentrations () {
         .selectAll("line")
         .data(allLinks)
         .enter().append("line")
-        .style("stroke", "grey")
+        .style("stroke", "silver")
         .style("stroke-width", "1.5px");
 
     // create all the nodes
     var graphNodes = svg.append("g")
-        .attr("class", "courses")
+        .attr("class", "nodes")
         .selectAll("circle")
         .data(allNodes)
         .enter().append("circle")
         // .attr("id", function(d) { return d.code; } )
         .style("fill", nodeColor)
         .attr("r", nodeSize) //courseNode size
+        .attr("class", "node")
+        .attr("id", function(d) { return d.code; })
         // functions to call when dragged
         .call(d3.drag()
-          .on("start", dragstarted)
-          .on("drag", dragged)
-          .on("end", dragended))
+            .on("start", dragstarted)
+            .on("drag", dragged)
+            .on("end", dragended))
         // show the tooltip on mouseover
-        .on("mouseenter", function (d) {
-          div.transition()
-            .duration(200)
-            .style("opacity", .8);
-          div.html(d.code + "<br>" + d.name)
-            .style("left", (d3.event.pageX) + "px")
-            .style("top", (d3.event.pageY - 28) + "px");
+        .on("mouseenter", function(d) {
+            div.transition()
+                .duration(200)
+                .style("opacity", 0.8);
+            div.html(tooltipLabel(d))
+                .style("left", (d3.event.pageX) + "px")
+                .style("top", (d3.event.pageY - 28) + "px");
+            d3.select("#"+d.code).style("fill", "firebrick");
         })
         // hide the tooltip on mouseleave
-        .on("mouseleave", function (d) {
-          div.transition()
-            .duration(500)
-            .style("opacity", 0);
+        .on("mouseleave", function(d) {
+            div.transition()
+                .duration(500)
+                .style("opacity", 0);
+            d3.select("#"+d.code).style("fill", nodeColor);
         })
         // when clicked, open the repository the node represents
-        .on("click", function (d) {
+        .on("click", function(d) {
             console.log(d);
         });
 
     // function to determine node size
     function nodeColor(d) {
         if (d.name.slice(0, 4) != "bsms") {
-            return "orange";
+            return "silver";
         } else {
             return "grey";
         }
     }
 
+    function tooltipLabel(d) {
+        if (d.name.slice(0, 4) != "bsms") {
+            return "Course: " + d.code + "<br>" + d.name;
+        } else {
+            var words = d.name.split("_");
+            var return_array = ["Concentration:<br>"];
+            for (i = 1; i < words.length; i=i+1) {
+                return_array.push(words[i][0].toUpperCase() + words[i].slice(1));
+            }
+            return return_array.join(" ");
+        }
+    }
+
     // function to determine node size
     function nodeSize(d) {
+        d.state = 0;
         if (d.name.slice(0, 4) != "bsms") {
-            return 5;
+            return 6;
         } else {
             return 15;
         }
@@ -153,7 +171,7 @@ function displayConcentrations () {
     // create the force simulation
     var forceSim = d3.forceSimulation(allNodes)
         .force("center", d3.forceCenter(width / 2, height / 2))
-        .force("collide", d3.forceCollide(5).strength(1))
+        .force("collide", d3.forceCollide(nodeSize).strength(1))
         .force("charge", d3.forceManyBody().strength(-30))
         .force("link", d3.forceLink().id(function(d) { return d.id; }).distance(50))
         .alphaDecay(0.02);
