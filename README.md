@@ -17,8 +17,7 @@ of the depth courses
 - Visualises this data using the d3 visualization library
 
 ### What it doesn't do:
-- Check that course namings are consistent (As of Feb. 7th, 2017, the class
-EECE 5698 has three different titles in three different concentrations)
+- Check that course namings are consistent
 
 ### Included Files:
 ```
