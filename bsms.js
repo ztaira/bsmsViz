@@ -14,6 +14,20 @@ var allConcentrations = [
     {"data": bsms_power_systems, "name": "bsms_power_systems"}
 ];
 
+function nodeSearchUrl(code) {
+    var url;
+    if (code.slice(0, 4) != "bsms") {
+        url = "http://catalog.northeastern.edu/search/?P=";
+        url = url + code.slice(0, -4) + "%20" + code.slice(-4);
+        return url;
+    } else {
+        url = "http://catalog.northeastern.edu/search/?P=";
+        searchstring = code.slice(5).replace(/_/g, " ");
+        url = url + searchstring;
+        return url;
+    }
+}
+
 // create the nodes array
 function createAllNodesArray () {
     var tempVar;
@@ -23,6 +37,7 @@ function createAllNodesArray () {
                 if (allNodeCodes.indexOf(allConcentrations[j].data[courseTypes[i]][h].code) === -1) {
                     tempVar = allConcentrations[j].data[courseTypes[i]][h];
                     tempVar.id = tempVar.code;
+                    tempVar.searchUrl = nodeSearchUrl(tempVar.code);
                     allNodes.push(tempVar);
                     allNodeCodes.push(tempVar.id);
                 }
@@ -30,8 +45,11 @@ function createAllNodesArray () {
         }
     }
     for (j = 0; j < allConcentrations.length; j=j+1) {
-        tempVar = allConcentrations[j].name;
-        allNodes.push({"code": tempVar, "name": tempVar, "id": tempVar});
+        tempVar = {"code": allConcentrations[j].name};
+        tempVar.name = tempVar.code;
+        tempVar.id = tempVar.code;
+        tempVar.searchUrl = nodeSearchUrl(tempVar.code);
+        allNodes.push(tempVar);
     }
     console.log({"nodes": allNodes});
 }
@@ -117,6 +135,8 @@ function displayConcentrations () {
         })
         // when clicked, open the repository the node represents
         .on("click", function(d) {
+            d3.event.stopPropagation();
+            window.open(d.searchUrl);
             console.log(d);
         });
 
