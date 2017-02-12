@@ -1,6 +1,6 @@
 # bsmsViz
-Hack-A-Week 16: Visualizing the BS/MS offerings in the Northeastern's
-Department of Electrical and Computer Engineering
+Hack-A-Week 16: Visualizing the BS/MS program's depth courses in 
+Northeastern's Department of Electrical and Computer Engineering
 
 ### Usage:
 - Visit https://ztaira14.github.io/bsmsViz/ for hosted version
@@ -32,3 +32,13 @@ with vim.
 
 ### Example Output:
 - See https://ztaira14.github.io/bsmsViz/
+
+### Source URLs:
+- [ECE Programs Homepage](http://catalog.northeastern.edu/graduate/engineering/electrical-computer/#programstext)
+- [Communications, Control, and Signal Processing](http://catalog.northeastern.edu/graduate/engineering/electrical-computer/electrical-computer-engineering-concentration-communications-control-signal-processing-msece/#programrequirementstext)
+- [Computer Systems and Software](http://catalog.northeastern.edu/graduate/engineering/electrical-computer/computer-systems-software/#programrequirementstext)
+- [Computer Networks and Security](http://catalog.northeastern.edu/graduate/engineering/electrical-computer/computer-networks-security/#programrequirementstext)
+- [Computer Vision, Machine Learning, and Algorithms](http://catalog.northeastern.edu/graduate/engineering/electrical-computer/computer-vision-machine-learning-algorithms/#programrequirementstext)
+- [Electromagnetics, Plasma, and Optics](http://catalog.northeastern.edu/graduate/engineering/electrical-computer/electrical-computer-engineering-concentration-electromagnetics-plasma-optics-msece/#programrequirementstext)
+- [Microsystems, Materials, and Devices](http://catalog.northeastern.edu/graduate/engineering/electrical-computer/electrical-computer-engineering-concentration-microsystems-materials-devices-msece/#programrequirementstext)
+- [Power Systems](http://catalog.northeastern.edu/graduate/engineering/electrical-computer/electrical-computer-engineering-concentration-power-systems-msece/#programrequirementstext)
